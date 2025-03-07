@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Пример кастомного стиля для кнопок -->
+    <style name="MyBlueButton" parent="Widget.MaterialComponents.Button">
+        <!-- Размеры -->
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+
+        <!-- Цвет фона (tint) -->
+        <item name="android:background">@color/blue</item>
+        <!-- Цвет текста -->
+        <item name="android:textColor">@android:color/white</item>
+        <!-- Прочие настройки (скругления, шрифт, размер текста и т.д.) -->
+
+        <!-- Если используете layout_weight, обычно ставят ширину 0dp -->
+        <!-- <item name="android:layout_width">0dp</item> -->
+    </style>
+
+    <color name="blue">#1550D5</color>
+</resources>

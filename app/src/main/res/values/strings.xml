@@ -1,3 +1,28 @@
 <resources>
     <string name="app_name">Patient</string>
+    <string name="otp_verification">OTP Verification</string>
+    <string name="create_new_password">Create new password</string>
+    <string name="enter_your_email">Enter your email</string>
+    <string name="your_new_password_must_be_unique_from_those_previously_used">Your new password must be unique from those previously used.</string>
+    <string name="login">Login</string>
+    <string name="successfully_registered">Successfully registered!</string>
+    <string name="back_to_login">Back to Login</string>
+    <string name="confirm_your_password">Confirm your password</string>
+    <string name="send_code">Send Code</string>
+    <string name="reset_password">Reset Password</string>
+    <string name="agree_and_register">Agree and Register</string>
+    <string name="you_already_have_an_account_log_in_now">You already have an account? Log in Now</string>
+    <string name="title_activity_home_page">HomePage</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="my_appointments">My Appointments</string>
+    <string name="profile">Profile</string>
+    <string name="all_doctors">All Doctors</string>
+    <string name="remember_password_login">Remember Password? Login</string>
+    <string name="home">Home</string>
+    <string name="appoitments">Appoitments</string>
+    <string name="doctors">Doctors</string>
+    <string name="profilee">Profile</string>
+    <string name="calendar">Calendar</string>
 </resources>

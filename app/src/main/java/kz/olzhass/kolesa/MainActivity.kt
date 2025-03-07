@@ -4,8 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.View
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import kz.olzhass.kolesa.databinding.ActivityMainBinding
@@ -22,9 +20,28 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE)
+        val token = sharedPreferences.getString("auth_token", null)
+
+
+        // Если токен существует, переходим на главную страницу
+        if (token != null) {
+            val intent = Intent(
+                this@MainActivity,
+                HomePage::class.java
+            )
+            startActivity(intent)
+            finish()
+        }
+
+
         with(binding) {
             buttonLogin.setOnClickListener {
-                val intent = Intent(this@MainActivity, MainPage::class.java)
+                val intent = Intent(this@MainActivity, HomePage::class.java)
+                startActivity(intent)
+            }
+            buttonRegister.setOnClickListener {
+                val intent = Intent(this@MainActivity, RegisterPage::class.java)
                 startActivity(intent)
             }
         }
