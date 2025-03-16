@@ -66,7 +66,7 @@ class ForgotPassword : AppCompatActivity() {
     }
 
     private fun forgotPassword(email: String) {
-        val url = "http://10.0.2.2:3000/forgot-password" // Замените на ваш реальный адрес
+        val url = "http://${GlobalData.ip}:3000/forgot-password" // Замените на ваш реальный адрес
         showLoading()
         // Формируем JSON-тело запроса
         val json = JSONObject()

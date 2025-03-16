@@ -11,16 +11,18 @@
 
     <TextView
         android:id="@+id/tv_welcome"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="141dp"
         android:fontFamily="@font/urbanist_bold"
-        android:text="Welcome to ___!"
+        android:text="@string/welcome_to"
         android:textColor="#1E232C"
         android:textSize="50sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
         tools:ignore="MissingConstraints" />
 
     <LinearLayout
@@ -40,7 +42,7 @@
             android:layout_marginTop="10dp"
             android:background="@drawable/shape_rounded"
             android:fontFamily="@font/urbanist_bold"
-            android:text="Login"
+            android:text="@string/login"
             android:textAllCaps="false"
             android:textColor="@android:color/white" />
 
@@ -52,8 +54,7 @@
             android:background="@drawable/shape_rounded_2"
             android:fontFamily="@font/urbanist_bold"
             android:textColor="@color/black"
-            android:text="Register
-"
+            android:text="@string/register"
 
             android:textAllCaps="false" />
     </LinearLayout>

@@ -23,7 +23,7 @@ import okhttp3.RequestBody
 import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
-
+//SCROLL PAGE ADD
 class RegisterPage : AppCompatActivity() {
     private lateinit var binding: ActivityRegisterPageBinding
     val client = OkHttpClient()
@@ -170,7 +170,7 @@ class RegisterPage : AppCompatActivity() {
     }
 
     private fun register(email: String, password: String, name: String, number: String) {
-        val url = "http://10.0.2.2:3000/register" // Укажи адрес твоего сервера
+        val url = "http://${GlobalData.ip}:3000/register" // Укажи адрес твоего сервера
         showLoading()
 
         val json = JSONObject().apply {

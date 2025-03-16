@@ -101,7 +101,7 @@ class OTPVerification : AppCompatActivity() {
     }
 
     private fun verifyResetCode(email: String, code: String, onVerified: () -> Unit) {
-        val url = "http://10.0.2.2:3000/verify-code" // Замените на адрес вашего сервера
+        val url = "http://${GlobalData.ip}:3000/verify-code" // Замените на адрес вашего сервера
         showLoading()
         // Формируем JSON-тело запроса с email и кодом
         val json = JSONObject().apply {

@@ -93,7 +93,7 @@ class ResetPassword : AppCompatActivity() {
     }
 
     private fun resetPassword(email: String, newPassword: String) {
-        val url = "http://10.0.2.2:3000/reset-password"  // Замените на свой адрес сервера
+        val url = "http://${GlobalData.ip}:3000/reset-password"  // Замените на свой адрес сервера
         showLoading()
         // Формируем JSON-тело запроса
         val json = JSONObject().apply {

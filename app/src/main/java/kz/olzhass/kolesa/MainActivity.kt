@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
 
         with(binding) {
             buttonLogin.setOnClickListener {
-                val intent = Intent(this@MainActivity, HomePage::class.java)
+                val intent = Intent(this@MainActivity, MainPage::class.java)
                 startActivity(intent)
             }
             buttonRegister.setOnClickListener {

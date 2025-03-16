@@ -18,4 +18,32 @@
     </style>
 
     <color name="blue">#1550D5</color>
+
+    <!-- Тема для BottomSheetDialogFragment -->
+    <style name="Theme.MyApp.BottomSheetDialog"
+        parent="Theme.MaterialComponents.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/Widget.MyApp.CustomBottomSheet</item>
+    </style>
+
+
+    <!-- Сам стиль BottomSheet -->
+    <style name="Widget.MyApp.CustomBottomSheet"
+        parent="@style/Widget.MaterialComponents.BottomSheet.Modal">
+        <!-- Форма -->
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.MyApp.RoundedTop</item>
+        <!-- Прочие настройки -->
+        <item name="behavior_peekHeight">@dimen/bottom_sheet_peek_height</item>
+    </style>
+
+    <!-- Оверлей (Overlay) с описанием скруглённых углов для top -->
+    <style name="ShapeAppearanceOverlay.MyApp.RoundedTop" parent="">
+        <item name="cornerFamily">rounded</item>
+        <!-- Закругляем только верхние углы, нижние — 0dp -->
+        <item name="cornerSizeTopLeft">30dp</item>
+        <item name="cornerSizeTopRight">30dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+    </style>
+
 </resources>
+

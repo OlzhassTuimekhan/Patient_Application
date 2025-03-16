@@ -1,27 +1,38 @@
 package kz.olzhass.kolesa.ui.profile
 
 import LoadingDialogFragment
+import android.Manifest
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kz.olzhass.kolesa.EditNameBottomSheetDialogFragment
+import kz.olzhass.kolesa.EditNumberBottomSheetDialogFragment
+import kz.olzhass.kolesa.EditPasswordBottomSheetDialogFragment
 import kz.olzhass.kolesa.GlobalData
+import kz.olzhass.kolesa.MainPage
 import kz.olzhass.kolesa.R
 import kz.olzhass.kolesa.databinding.FragmentProfileBinding
 import kz.olzhass.kolesa.ui.calendar.CalendarFragment
 import okhttp3.Call
 import okhttp3.Callback
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.RequestBody
 import okhttp3.Response
 import okio.IOException
 import org.json.JSONObject
@@ -32,56 +43,155 @@ class ProfileFragment : Fragment() {
     private val binding get() = _binding!!
     val client = OkHttpClient()
     private var loadingDialog: LoadingDialogFragment? = null
+    private lateinit var viewModel: ProfileViewModel
+    private var userId: Int = -1
+
+
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-
-        val navView: BottomNavigationView = requireActivity().findViewById(R.id.nav_view)
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
-        // Получаем userId из SharedPreferences
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Инициализация SharedPreferences, viewModel, получение userId
         val sharedPreferences = requireContext().getSharedPreferences("user_prefs", AppCompatActivity.MODE_PRIVATE)
-        val userId = sharedPreferences.getInt("user_id", -1)  // Получаем userId, -1 - значение по умолчанию, если его нет
+        userId = sharedPreferences.getInt("user_id", -1)
+        viewModel = ViewModelProvider(requireActivity()).get(ProfileViewModel::class.java)
 
-//        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-//            val result = loadDataFromDatabase() // Долгая операция
-//            withContext(Dispatchers.Main) {
-//                updateUI(result)
-//            }
-//        }
+        // Подписка на LiveData для обновления UI
+        viewModel.profileData.observe(viewLifecycleOwner) { profile ->
+            profile?.let {
+                binding.tvName.text = it.name
+                binding.tvNumber.text = it.phoneNumber
+                binding.tvLocation.text = it.location
+            }
+        }
+
+        viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
+            message?.let {
+                binding.tvErrorMessage.text = it
+                binding.tvErrorMessage.visibility = View.VISIBLE
+            }
+        }
+
+        viewModel.isLoading.observe(viewLifecycleOwner) { loading ->
+            if (loading) {
+                if (loadingDialog == null) {
+                    loadingDialog = LoadingDialogFragment()
+                    loadingDialog?.show(childFragmentManager, "loading")
+                }
+            } else {
+                if (loadingDialog != null && loadingDialog?.isAdded == true) {
+                    loadingDialog?.dismissAllowingStateLoss()
+                    loadingDialog = null
+                }
+            }
+        }
+
+        // Получение данных профиля
         if (userId != -1) {
+            viewModel.fetchProfile(userId)
 
-            fetchProfile(userId)
         } else {
-            // Ошибка: userId не найден, нужно попросить пользователя войти заново
             binding.tvErrorMessage.text = "User ID not found"
             binding.tvErrorMessage.visibility = View.VISIBLE
         }
-        // 1. Читаем сохранённый индекс изображения
-        val savedIndex = sharedPreferences.getInt("profile_image_index_$userId", -1)
 
-        // 2. Если индекс уже есть, используем его. Если нет — создаём новый.
-        val imageIndex = if (savedIndex != -1) {
-            savedIndex
+        val savedUriString = sharedPreferences.getString("profile_image_uri_$userId", null)
+        if (savedUriString != null) {
+            // Если есть сохранённый URI — загружаем его
+            binding.imageProfile.setImageURI(Uri.parse(savedUriString))
+
         } else {
-            val newIndex = (0..7).random()
-            sharedPreferences.edit().putInt("profile_image_index_$userId", newIndex).apply()
-            newIndex
+            // Если нет сохранённого URI, используем случайное изображение
+            val savedIndex = sharedPreferences.getInt("profile_image_index_$userId", -1)
+            val imageIndex = if (savedIndex != -1) {
+                savedIndex
+            } else {
+                val newIndex = (0..7).random()
+                sharedPreferences.edit().putInt("profile_image_index_$userId", newIndex).apply()
+                newIndex
+            }
+            GlobalData.randomImageIndex = imageIndex
+            setProfileImage(imageIndex)
         }
 
-        // 3. Сохраняем в глобальные данные
-        GlobalData.randomImageIndex = imageIndex
 
-        // 4. Устанавливаем изображение
-        setProfileImage(imageIndex)
+        binding.swipeRefresh.setOnRefreshListener {
+            refreshData(userId)
+        }
 
-//        with(binding) {
-//            tvMyAppointments.setOnClickListener {
-//                navView.selectedItemId = R.id.navigation_calendar
-//            }
-//        }
 
-        return binding.root
+
+
+        with(binding) {
+            btChangePicture.setOnClickListener {
+
+                val galleryPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    Manifest.permission.READ_MEDIA_IMAGES
+                } else {
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                }
+                // Проверяем, есть ли разрешение (оно должно было быть запрошено в HomePage)
+                if (ContextCompat.checkSelfPermission(requireContext(), galleryPermission) == PackageManager.PERMISSION_GRANTED) {
+                    // Разрешение есть – открываем галерею
+                    galleryLauncher.launch("image/*")
+                } else {
+                    Toast.makeText(context, R.string.permission_denied, Toast.LENGTH_SHORT).show()
+                }
+
+            //                val newIndex = (0..7).random()
+//                sharedPreferences.edit().putInt("profile_image_index_$userId", newIndex).apply()
+//                setProfileImage(newIndex)
+            }
+            tvLogOut.setOnClickListener {
+                val sharedPreferences = requireActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+                with(sharedPreferences.edit()) {
+//                    clear()
+                    apply()
+                }
+                val intent = Intent(requireActivity(), MainPage::class.java)
+                startActivity(intent)
+                requireActivity().finish()
+            }
+            tvChangeContact.setOnClickListener {
+                val bottomSheet = EditNumberBottomSheetDialogFragment()
+                bottomSheet.setOnNumberSavedListener { newNumber ->
+                    updateContactNumber(userId, newNumber)
+                }
+                bottomSheet.show(childFragmentManager, "EditNumberBottomSheet")
+            }
+            btEditName.setOnClickListener {
+                val bottomSheet = EditNameBottomSheetDialogFragment()
+                bottomSheet.setOnNameSavedListener { newName ->
+                    updateName(userId, newName)
+                }
+                bottomSheet.show(childFragmentManager, "EditNameBottomSheet")
+            }
+            tvChangePassword.setOnClickListener {
+                val bottomSheet = EditPasswordBottomSheetDialogFragment()
+                bottomSheet.setOnPasswordSavedListener { newPassword ->
+                    updatePassword(userId, newPassword)
+                }
+                bottomSheet.show(childFragmentManager, "EditPasswordBottomSheet")
+            }
+            tvSettings.setOnClickListener {
+                findNavController().navigate(R.id.action_profileFragment_to_settingsFragment)
+            }
+            tvMyAppointments.setOnClickListener {
+                findNavController().navigate(R.id.action_profileFragment_to_calendarFragment)
+            }
+        }
+
+        // Сохранение глобальных данных и установка изображения
+//        GlobalData.randomImageIndex = imageIndex
+//        setProfileImage(imageIndex)
     }
+
 
 
     override fun onDestroyView() {
@@ -89,59 +199,169 @@ class ProfileFragment : Fragment() {
         _binding = null
     }
 
-    private fun fetchProfile(userId: Int) {
-        showLoading()
-        if (userId == -1) {
-            binding.tvErrorMessage.text = "User ID is not available"
-            binding.tvErrorMessage.visibility = View.VISIBLE
-            return
+
+
+    private fun updateContactNumber(userId: Int, newNumber: String) {
+        showLoading() // показываем диалог "Loading..."
+
+        // 1. Формируем URL для PUT-запроса
+        val url = "http://${GlobalData.ip}:3000/profile/$userId/number"
+
+        // 2. Создаем JSON c новым номером
+        val json = JSONObject().apply {
+            put("number", newNumber)
         }
+        val requestBody = RequestBody.create(
+            "application/json; charset=utf-8".toMediaTypeOrNull(),
+            json.toString()
+        )
 
-        val url = "http://10.0.2.2:3000/profile/$userId"
-
+        // 3. Формируем PUT-запрос
         val request = Request.Builder()
             .url(url)
-            .get()
+            .put(requestBody)
             .build()
 
+        // 4. Отправляем запрос
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
+                // Если запрос не отправился или сервер не ответил
                 requireActivity().runOnUiThread {
                     hideLoading()
-                    binding.tvErrorMessage.text = "Profile fetch failed: ${e.message}"
-                    binding.tvErrorMessage.visibility = View.VISIBLE
+                    Toast.makeText(requireContext(), "Update failed: ${e.message}", Toast.LENGTH_LONG).show()
                 }
             }
 
             override fun onResponse(call: Call, response: Response) {
-
-                if (!isAdded || activity == null) return
-
-
                 requireActivity().runOnUiThread {
+                    hideLoading()
                     if (response.isSuccessful) {
                         val responseBody = response.body?.string()
-                        val jsonResponse = JSONObject(responseBody)
-                        if (jsonResponse.getBoolean("success")) {
-                            hideLoading()
-                            val profile = jsonResponse.getJSONObject("profile")
-                            binding.tvName.text = profile.getString("name")
-                            binding.tvNumber.text = profile.getString("phonenumber")
-                            binding.tvLocation.text = profile.getString("location")
+                        val jsonResp = JSONObject(responseBody ?: "")
+                        if (jsonResp.optBoolean("success", false)) {
+                            // Успешно обновили номер
+                            Toast.makeText(requireContext(), "Contact number updated!", Toast.LENGTH_LONG).show()
+
+                            // Обновляем UI, если нужно
+                            binding.tvNumber.text = newNumber
                         } else {
-                            hideLoading()
-                            binding.tvErrorMessage.text = "Profile fetch failed: ${jsonResponse.getString("message")}"
-                            binding.tvErrorMessage.visibility = View.VISIBLE
+                            // Сервер вернул success = false, смотрим сообщение
+                            val msg = jsonResp.optString("message", "Unknown error")
+                            Toast.makeText(requireContext(), msg, Toast.LENGTH_LONG).show()
                         }
                     } else {
-                        hideLoading()
-                        binding.tvErrorMessage.text = "Profile fetch failed: ${response.message}"
-                        binding.tvErrorMessage.visibility = View.VISIBLE
+                        // Сервер вернул статус 4xx или 5xx
+                        Toast.makeText(requireContext(), "Update failed: ${response.message}", Toast.LENGTH_LONG).show()
                     }
                 }
             }
         })
     }
+
+    private fun updateName(userId: Int, newName: String) {
+        showLoading()
+
+        // Формируем URL для PUT-запроса
+        val url = "http://${GlobalData.ip}:3000/profile/$userId/name"
+
+        // Создаем JSON с новым именем
+        val json = JSONObject().apply {
+            put("name", newName)
+        }
+        val requestBody = RequestBody.create(
+            "application/json; charset=utf-8".toMediaTypeOrNull(),
+            json.toString()
+        )
+
+        // Формируем PUT-запрос
+        val request = Request.Builder()
+            .url(url)
+            .put(requestBody)
+            .build()
+
+        // Отправляем запрос
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                requireActivity().runOnUiThread {
+                    hideLoading()
+                    Toast.makeText(requireContext(), "Update failed: ${e.message}", Toast.LENGTH_LONG).show()
+                }
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                requireActivity().runOnUiThread {
+                    hideLoading()
+                    if (response.isSuccessful) {
+                        val responseBody = response.body?.string()
+                        val jsonResp = JSONObject(responseBody ?: "")
+                        if (jsonResp.optBoolean("success", false)) {
+                            // Успешно обновили имя
+                            Toast.makeText(requireContext(), "Name updated successfully!", Toast.LENGTH_LONG).show()
+                            binding.tvName.text = newName
+                        } else {
+                            val msg = jsonResp.optString("message", "Unknown error")
+                            Toast.makeText(requireContext(), msg, Toast.LENGTH_LONG).show()
+                        }
+                    } else {
+                        Toast.makeText(requireContext(), "Update failed: ${response.message}", Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        })
+    }
+
+    private fun updatePassword(userId: Int, newPassword: String) {
+        showLoading() // показываем диалог "Loading..."
+
+        // Формируем URL для PUT-запроса
+        val url = "http://${GlobalData.ip}:3000/client/$userId/password"
+
+        // Создаем JSON с новым паролем
+        val json = JSONObject().apply {
+            put("password", newPassword)
+        }
+        val requestBody = RequestBody.create(
+            "application/json; charset=utf-8".toMediaTypeOrNull(),
+            json.toString()
+        )
+
+        // Формируем PUT-запрос
+        val request = Request.Builder()
+            .url(url)
+            .put(requestBody)
+            .build()
+
+        // Отправляем запрос
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                requireActivity().runOnUiThread {
+                    hideLoading()
+                    Toast.makeText(requireContext(), "Password update failed: ${e.message}", Toast.LENGTH_LONG).show()
+                }
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                requireActivity().runOnUiThread {
+                    hideLoading()
+                    if (response.isSuccessful) {
+                        val responseBody = response.body?.string()
+                        val jsonResp = JSONObject(responseBody ?: "")
+                        if (jsonResp.optBoolean("success", false)) {
+                            Toast.makeText(requireContext(), "Password updated successfully!", Toast.LENGTH_LONG).show()
+                        } else {
+                            val msg = jsonResp.optString("message", "Unknown error")
+                            Toast.makeText(requireContext(), msg, Toast.LENGTH_LONG).show()
+                        }
+                    } else {
+                        Toast.makeText(requireContext(), "Password update failed: ${response.message}", Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        })
+    }
+
+
+
     private fun setProfileImage(index: Int) {
         val imageResources = listOf(
             R.drawable.image_1,
@@ -157,6 +377,21 @@ class ProfileFragment : Fragment() {
         binding.imageProfile.setImageResource(imageResources[index])
     }
 
+    private fun refreshData(userId: Int) {
+        viewModel.fetchProfile(userId)
+
+
+        viewModel.profileData.observe(viewLifecycleOwner) { profile ->
+            // После обновления данных останавливаем анимацию обновления
+            binding.swipeRefresh.isRefreshing = false
+
+        }
+
+
+        binding.swipeRefresh.isRefreshing = false
+    }
+
+
     fun showLoading() {
         if (loadingDialog == null) {
             loadingDialog = LoadingDialogFragment()
@@ -170,6 +405,24 @@ class ProfileFragment : Fragment() {
             loadingDialog = null
         }
     }
+
+    private val galleryLauncher = registerForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            binding.imageProfile.setImageURI(it)
+            // Сохраняем URI в SharedPreferences
+            val sharedPreferences = requireContext().getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+            sharedPreferences.edit().putString("profile_image_uri_$userId", it.toString()).apply()
+            // Если нужно постоянное разрешение, сохраняем его (если поддерживается)
+            try {
+                requireContext().contentResolver.takePersistableUriPermission(it, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            } catch (e: SecurityException) {
+                e.printStackTrace()
+            }
+        }
+    }
+
 
 
 }
