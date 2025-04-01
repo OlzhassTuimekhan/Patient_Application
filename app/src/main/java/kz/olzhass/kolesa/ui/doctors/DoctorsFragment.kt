@@ -45,4 +45,9 @@ private var _binding: FragmentDoctorsBinding? = null
             }
         }.attach()
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 }

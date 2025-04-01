@@ -1,7 +1,6 @@
 package kz.olzhass.kolesa
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -12,13 +11,16 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kz.olzhass.kolesa.databinding.ActivityHomePageBinding
 import android.Manifest
-import android.content.pm.PackageManager
 import android.widget.Toast
 import android.os.Build
+import androidx.activity.viewModels
+import kz.olzhass.kolesa.ui.profile.ProfileViewModel
 
 class HomePage : AppCompatActivity() {
 
-private lateinit var binding: ActivityHomePageBinding
+    private lateinit var binding: ActivityHomePageBinding
+    private val profileViewModel: ProfileViewModel by viewModels()
+    private var userId: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,14 +32,18 @@ private lateinit var binding: ActivityHomePageBinding
         val navView: BottomNavigationView = binding.navView
 
         val navController = findNavController(R.id.nav_host_fragment_activity_home_page)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
         val appBarConfiguration = AppBarConfiguration(setOf(
             R.id.navigation_home, R.id.navigation_calendar, R.id.navigation_doctors, R.id.navigation_profile))
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
         requestPermissions()
+
+        val sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE)
+        userId = sharedPreferences.getInt("user_id", -1)
+        if (userId != -1) {
+            profileViewModel.fetchProfile(userId)
+        }
     }
 
     private val permissionLauncher = registerForActivityResult(
@@ -76,9 +82,11 @@ private lateinit var binding: ActivityHomePageBinding
         permissionLauncher.launch(permissionsList.toTypedArray())
     }
 
-//    override fun attachBaseContext(newBase: Context) {
-//        val lang = LocaleHelper.getLanguage(newBase)
-//        val context = LocaleHelper.updateResources(newBase, lang)
-//        super.attachBaseContext(context)
-//    }
+    override fun attachBaseContext(newBase: Context) {
+        val prefs = newBase.getSharedPreferences("app_settings", Context.MODE_PRIVATE)
+        val language = prefs.getString("app_language", "en") ?: "en"
+        val context = LocaleHelper.updateLocale(newBase, language)
+        super.attachBaseContext(context)
+    }
+
 }

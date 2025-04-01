@@ -1,0 +1,40 @@
+package kz.olzhass.kolesa
+
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
+
+class SpecialtiesAdapter(
+    private var specialties: List<Specialty>,
+    private val onItemClick: (Specialty) -> Unit
+) : RecyclerView.Adapter<SpecialtiesAdapter.SpecialtyViewHolder>() {
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SpecialtyViewHolder {
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.item_specialty, parent, false) // Используем item_specialty.xml для отображения
+        return SpecialtyViewHolder(view)
+    }
+
+    override fun onBindViewHolder(holder: SpecialtyViewHolder, position: Int) {
+        val specialty = specialties[position]
+        holder.bind(specialty, onItemClick)
+    }
+
+    override fun getItemCount(): Int = specialties.size
+
+    fun updateData(newSpecialties: List<Specialty>) {
+        specialties = newSpecialties
+        notifyDataSetChanged()
+    }
+
+    class SpecialtyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val specialtyName: TextView = itemView.findViewById(R.id.specialtyName)
+
+        fun bind(specialty: Specialty, onItemClick: (Specialty) -> Unit) {
+            specialtyName.text = specialty.name
+            itemView.setOnClickListener { onItemClick(specialty) }
+        }
+    }
+}

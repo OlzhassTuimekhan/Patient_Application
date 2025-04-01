@@ -5,4 +5,6 @@ object GlobalData {
     var token: String? = null
     var randomImageIndex: Int? = null
     var ip: String = "10.0.2.2"
+    //172.20.10.10
+    //10.0.2.2
 }

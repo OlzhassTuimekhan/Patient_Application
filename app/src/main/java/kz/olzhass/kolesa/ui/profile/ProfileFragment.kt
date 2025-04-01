@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +18,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import kz.olzhass.kolesa.EditNameBottomSheetDialogFragment
@@ -45,17 +47,19 @@ class ProfileFragment : Fragment() {
     private var loadingDialog: LoadingDialogFragment? = null
     private lateinit var viewModel: ProfileViewModel
     private var userId: Int = -1
-
+    private val profileViewModel: ProfileViewModel by activityViewModels()
 
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
+        Log.d("ProfileFragment", "onCreateView called")
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.d("ProfileFragment", "onViewCreated called")
 
         // Инициализация SharedPreferences, viewModel, получение userId
         val sharedPreferences = requireContext().getSharedPreferences("user_prefs", AppCompatActivity.MODE_PRIVATE)
@@ -63,11 +67,14 @@ class ProfileFragment : Fragment() {
         viewModel = ViewModelProvider(requireActivity()).get(ProfileViewModel::class.java)
 
         // Подписка на LiveData для обновления UI
-        viewModel.profileData.observe(viewLifecycleOwner) { profile ->
-            profile?.let {
-                binding.tvName.text = it.name
-                binding.tvNumber.text = it.phoneNumber
-                binding.tvLocation.text = it.location
+        profileViewModel.profileData.observe(viewLifecycleOwner) { profile ->
+            if (profile != null) {
+                binding.tvName.text = profile.name
+                binding.tvNumber.text = profile.phoneNumber
+                binding.tvLocation.text = profile.location
+                // Обновляем UI согласно полученным данным
+            } else {
+                binding.tvErrorMessage.text = "User not Found"
             }
         }
 
@@ -92,22 +99,12 @@ class ProfileFragment : Fragment() {
             }
         }
 
-        // Получение данных профиля
-        if (userId != -1) {
-            viewModel.fetchProfile(userId)
-
-        } else {
-            binding.tvErrorMessage.text = "User ID not found"
-            binding.tvErrorMessage.visibility = View.VISIBLE
-        }
 
         val savedUriString = sharedPreferences.getString("profile_image_uri_$userId", null)
         if (savedUriString != null) {
-            // Если есть сохранённый URI — загружаем его
             binding.imageProfile.setImageURI(Uri.parse(savedUriString))
 
         } else {
-            // Если нет сохранённого URI, используем случайное изображение
             val savedIndex = sharedPreferences.getInt("profile_image_index_$userId", -1)
             val imageIndex = if (savedIndex != -1) {
                 savedIndex
@@ -121,9 +118,9 @@ class ProfileFragment : Fragment() {
         }
 
 
-        binding.swipeRefresh.setOnRefreshListener {
-            refreshData(userId)
-        }
+//        binding.swipeRefresh.setOnRefreshListener {
+//            refreshData(userId)
+//        }
 
 
 
@@ -152,6 +149,8 @@ class ProfileFragment : Fragment() {
                 val sharedPreferences = requireActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
                 with(sharedPreferences.edit()) {
 //                    clear()
+                    remove("auth_token")
+                    GlobalData.token = null
                     apply()
                 }
                 val intent = Intent(requireActivity(), MainPage::class.java)
@@ -376,21 +375,6 @@ class ProfileFragment : Fragment() {
 
         binding.imageProfile.setImageResource(imageResources[index])
     }
-
-    private fun refreshData(userId: Int) {
-        viewModel.fetchProfile(userId)
-
-
-        viewModel.profileData.observe(viewLifecycleOwner) { profile ->
-            // После обновления данных останавливаем анимацию обновления
-            binding.swipeRefresh.isRefreshing = false
-
-        }
-
-
-        binding.swipeRefresh.isRefreshing = false
-    }
-
 
     fun showLoading() {
         if (loadingDialog == null) {

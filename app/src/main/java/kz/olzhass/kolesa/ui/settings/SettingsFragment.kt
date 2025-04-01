@@ -3,6 +3,7 @@ package kz.olzhass.kolesa.ui.settings
 
 import android.app.AlertDialog
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,7 +12,6 @@ import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import kz.olzhass.kolesa.databinding.FragmentSettingsBinding
-import java.util.Locale
 import kz.olzhass.kolesa.R
 
 
@@ -81,21 +81,25 @@ class SettingsFragment : Fragment() {
     }
 
     private fun setLocale(language: String) {
-        val locale = Locale(language)
-        Locale.setDefault(locale)
-        val resources = requireContext().resources
-        val configuration = resources.configuration
-
-        // Применяем новую локаль
-        configuration.setLocale(locale)
-        resources.updateConfiguration(configuration, resources.displayMetrics)
-
         // Сохраняем выбранный язык в SharedPreferences
         val prefs = requireContext().getSharedPreferences("app_settings", Context.MODE_PRIVATE)
         prefs.edit().putString("app_language", language).apply()
 
         // Перезапускаем Activity для применения изменений
         activity?.recreate()
+    }
+
+    private fun restartApp() {
+        // Получаем Intent для запуска главного Activity (Launcher)
+        val intent = requireContext().packageManager.getLaunchIntentForPackage(requireContext().packageName)
+        // Добавляем флаг для очистки стека Activity
+        intent?.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+        // Запускаем Activity
+        intent?.let { startActivity(it) }
+        // Завершаем все Activity в текущем таске
+        activity?.finishAffinity()
+        // Завершаем процесс (опционально)
+        Runtime.getRuntime().exit(0)
     }
 
 
