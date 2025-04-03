@@ -11,6 +11,8 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kz.olzhass.kolesa.databinding.ActivityHomePageBinding
 import android.Manifest
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.widget.Toast
 import android.os.Build
 import androidx.activity.viewModels
@@ -44,6 +46,21 @@ class HomePage : AppCompatActivity() {
         if (userId != -1) {
             profileViewModel.fetchProfile(userId)
         }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channelId = "my_channel_id"
+            val channelName = "My Notification Channel"
+            val channelDescription = "This channel is used for notifications"
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+
+            val notificationChannel = NotificationChannel(channelId, channelName, importance).apply {
+                description = channelDescription
+            }
+
+            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(notificationChannel)
+        }
+
     }
 
     private val permissionLauncher = registerForActivityResult(

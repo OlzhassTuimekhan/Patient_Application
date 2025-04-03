@@ -27,7 +27,13 @@
         android:id="@+id/navigation_doctors"
         android:name="kz.olzhass.kolesa.ui.doctors.DoctorsFragment"
         android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_doctors">
+        tools:layout="@layout/fragment_doctors"
+        >
+
+        <action
+            android:id="@+id/action_allSpecialties_to_doctorsBySpecialty"
+            app:destination="@id/doctorsBySpecialtyFragment"
+            app:argType="integer" />
 
     </fragment>
 
@@ -48,7 +54,22 @@
 
 
     </fragment>
+    <fragment
+        android:id="@+id/doctorsBySpecialtyFragment"
+        android:name="kz.olzhass.kolesa.DoctorsBySpecialtyFragment"
+        android:label="Doctors By Specialty"
+        tools:layout="@layout/fragment_doctors_by_specialty"/>
 
+    <fragment
+        android:id="@+id/allSpecialtiesFragment"
+        android:name="kz.olzhass.kolesa.AllSpecialtiesFragment"
+        android:label="All Specialties"
+        tools:layout="@layout/fragment_specific_doctors">
+        <action
+            android:id="@+id/action_allSpecialties_to_doctorsBySpecialty"
+            app:destination="@id/doctorsBySpecialtyFragment"
+            app:argType="integer" />
+    </fragment>
     <fragment
         android:id="@+id/navigation_settings"
         android:name="kz.olzhass.kolesa.ui.settings.SettingsFragment"

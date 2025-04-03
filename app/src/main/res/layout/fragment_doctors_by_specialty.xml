@@ -8,6 +8,7 @@
     tools:context=".DoctorsBySpecialtyFragment">
 
     <!-- RecyclerView для отображения списка врачей -->
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewDoctors"
         android:layout_width="match_parent"

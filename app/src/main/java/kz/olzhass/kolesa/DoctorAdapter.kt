@@ -1,6 +1,7 @@
 package kz.olzhass.kolesa
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,16 +26,17 @@ class DoctorAdapter(private var doctors: List<Doctor>) :
 
     override fun onBindViewHolder(holder: DoctorViewHolder, position: Int) {
         val doctor = doctors[position]
-        holder.tvDoctorName.text = doctor.nameSurname
-        holder.tvSpecialty.text = doctor.specialties
-        holder.tvPhone.text = doctor.phone
-        holder.tvServices.text = doctor.services
+        holder.tvDoctorName.text = doctor.nameSurname ?: "Неизвестно"
+        holder.tvSpecialty.text = doctor.specialties ?: "Не указана"
+        holder.tvPhone.text = doctor.phone ?: "Нет телефона"
+        holder.tvServices.text = doctor.services ?: "Нет услуг"
     }
 
     override fun getItemCount(): Int = doctors.size
 
     @SuppressLint("NotifyDataSetChanged")
     fun updateDoctors(newDoctors: List<Doctor>) {
+        Log.d("DoctorAdapter", "Updating doctors list: $newDoctors")
         doctors = newDoctors
         notifyDataSetChanged()
     }

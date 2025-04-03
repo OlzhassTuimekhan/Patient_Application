@@ -12,7 +12,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -28,7 +27,6 @@ import kz.olzhass.kolesa.GlobalData
 import kz.olzhass.kolesa.MainPage
 import kz.olzhass.kolesa.R
 import kz.olzhass.kolesa.databinding.FragmentProfileBinding
-import kz.olzhass.kolesa.ui.calendar.CalendarFragment
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaTypeOrNull

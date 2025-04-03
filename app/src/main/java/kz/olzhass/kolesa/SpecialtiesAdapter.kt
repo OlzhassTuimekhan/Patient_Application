@@ -1,5 +1,7 @@
 package kz.olzhass.kolesa
 
+import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,6 +26,7 @@ class SpecialtiesAdapter(
 
     override fun getItemCount(): Int = specialties.size
 
+    @SuppressLint("NotifyDataSetChanged")
     fun updateData(newSpecialties: List<Specialty>) {
         specialties = newSpecialties
         notifyDataSetChanged()
@@ -34,7 +37,9 @@ class SpecialtiesAdapter(
 
         fun bind(specialty: Specialty, onItemClick: (Specialty) -> Unit) {
             specialtyName.text = specialty.name
-            itemView.setOnClickListener { onItemClick(specialty) }
+            itemView.setOnClickListener {
+                Log.d("Specialty", "Clicked: ${specialty.name}")
+                onItemClick(specialty) }
         }
     }
 }
