@@ -13,5 +13,12 @@
     <color name="for_doctor_card">#1C665E</color>
     <color name="holo_blue_dark">#2A7FBA</color>
     <color name="gray_for_background">#F0F3F5</color>
-
+    <color name="colorPrimary">#007BFF</color>
+    <color name="colorPrimaryDark">#0056b3</color>
+    <color name="colorAccent">#03DAC5</color>
+    <color name="gray_text">#777777</color>
+    <color name="light_gray">#F0F0F0</color>
+    <color name="gray_border">#CCCCCC</color>
+    <color name="orange">#FFBF00</color>
+    <color name="green">#50C878</color>
 </resources>

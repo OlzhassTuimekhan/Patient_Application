@@ -3,9 +3,7 @@ package kz.olzhass.kolesa.ui.doctors
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import kz.olzhass.kolesa.Doctor
 import kz.olzhass.kolesa.GlobalData
-import kz.olzhass.kolesa.Specialty
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.OkHttpClient

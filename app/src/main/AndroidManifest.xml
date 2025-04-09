@@ -4,10 +4,12 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"
+        tools:ignore="SelectedPhotoAccess" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
 
 
 
@@ -27,19 +29,19 @@
             android:exported="false"
             android:label="@string/title_activity_home_page" />
         <activity
-            android:name=".ResetPassword"
+            android:name=".ui.resetpassword.ResetPassword"
             android:exported="false" />
         <activity
-            android:name=".OTPVerification"
+            android:name=".ui.resetpassword.OTPVerification"
             android:exported="false" />
         <activity
-            android:name=".ForgotPassword"
+            android:name=".ui.resetpassword.ForgotPassword"
             android:exported="false" />
         <activity
-            android:name=".Success"
+            android:name=".ui.resetpassword.Success"
             android:exported="false" />
         <activity
-            android:name=".RegisterPage"
+            android:name=".ui.register.RegisterPage"
             android:exported="false" /> <!-- WELCOME PAGE SETTINGS -->
         <activity
             android:name=".MainActivity"
@@ -53,7 +55,7 @@
             </intent-filter>
         </activity> <!-- LOGIN PAGE SETTINGS -->
         <activity
-            android:name=".MainPage"
+            android:name=".ui.login.MainPage"
             android:exported="true"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" >
             <intent-filter>
@@ -62,6 +64,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".FullScreenImageActivity" />
     </application>
 
 </manifest>

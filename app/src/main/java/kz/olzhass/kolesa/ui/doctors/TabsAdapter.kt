@@ -1,8 +1,7 @@
-package kz.olzhass.kolesa
+package kz.olzhass.kolesa.ui.doctors
 
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import kz.olzhass.kolesa.ui.doctors.DoctorsViewModel
 
 class TabsAdapter(fragment: Fragment, private val viewModel: DoctorsViewModel) : FragmentStateAdapter(fragment) {
 

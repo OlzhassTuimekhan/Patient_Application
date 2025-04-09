@@ -1,4 +1,4 @@
-package kz.olzhass.kolesa
+package kz.olzhass.kolesa.ui.doctors
 
 import LoadingDialogFragment
 import android.os.Bundle
@@ -11,7 +11,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import kz.olzhass.kolesa.databinding.FragmentAllDoctorsBinding
-import kz.olzhass.kolesa.ui.doctors.DoctorsViewModel
 import okhttp3.OkHttpClient
 
 class AllDoctorsFragment : Fragment() {

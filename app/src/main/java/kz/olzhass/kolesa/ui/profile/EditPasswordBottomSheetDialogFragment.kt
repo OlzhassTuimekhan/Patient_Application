@@ -1,4 +1,4 @@
-package kz.olzhass.kolesa
+package kz.olzhass.kolesa.ui.profile
 
 import android.os.Bundle
 import android.text.method.HideReturnsTransformationMethod
@@ -11,6 +11,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import kz.olzhass.kolesa.R
 import kz.olzhass.kolesa.databinding.FragmentEditPasswordBottomSheetBinding
 
 class EditPasswordBottomSheetDialogFragment : BottomSheetDialogFragment() {

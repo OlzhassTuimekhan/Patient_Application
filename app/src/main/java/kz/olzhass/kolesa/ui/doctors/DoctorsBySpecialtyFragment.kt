@@ -1,4 +1,4 @@
-package kz.olzhass.kolesa
+package kz.olzhass.kolesa.ui.doctors
 
 import LoadingDialogFragment
 import android.os.Bundle
@@ -11,8 +11,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import kz.olzhass.kolesa.GlobalData
 import kz.olzhass.kolesa.databinding.FragmentDoctorsBySpecialtyBinding
-import kz.olzhass.kolesa.ui.doctors.DoctorsViewModel
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.OkHttpClient
@@ -25,7 +25,7 @@ class DoctorsBySpecialtyFragment : Fragment() {
 
     private var _binding: FragmentDoctorsBySpecialtyBinding? = null
     private val binding get() = _binding!!
-    private lateinit var doctorsAdapter: DoctorAdapter
+    private lateinit var doctorsAdapter: DoctorAdapterSpecialist
     private var loadingDialog: LoadingDialogFragment? = null
 
     private val _errorMessage = MutableLiveData<String?>()
@@ -65,12 +65,14 @@ class DoctorsBySpecialtyFragment : Fragment() {
             specialtyId = it.getInt("specialtyId", 0)
         }
         Log.d("DoctorsBySpecialty", "Specialty ID: $specialtyId")
-        doctorsAdapter = DoctorAdapter(emptyList())
+        doctorsAdapter = DoctorAdapterSpecialist(emptyList())
         binding.recyclerViewDoctors.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = doctorsAdapter
         }
-
+        binding.imageButton.setOnClickListener {
+            parentFragmentManager.popBackStack()
+        }
         // Попытка получить данные из ViewModel
         val specialtyName = viewModel.allSpecialties.value?.find { it.id == specialtyId }?.name
         if (specialtyName != null) {

@@ -1,4 +1,4 @@
-package kz.olzhass.kolesa
+package kz.olzhass.kolesa.ui.register
 
 import LoadingDialogFragment
 import android.content.Intent
@@ -13,6 +13,10 @@ import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import kz.olzhass.kolesa.GlobalData
+import kz.olzhass.kolesa.ui.login.MainPage
+import kz.olzhass.kolesa.R
+import kz.olzhass.kolesa.ui.resetpassword.Success
 import kz.olzhass.kolesa.databinding.ActivityRegisterPageBinding
 import okhttp3.Call
 import okhttp3.Callback

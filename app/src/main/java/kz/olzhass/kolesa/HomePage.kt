@@ -1,8 +1,16 @@
 package kz.olzhass.kolesa
 
+import LocaleHelper
+import android.Manifest
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -10,12 +18,6 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kz.olzhass.kolesa.databinding.ActivityHomePageBinding
-import android.Manifest
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.widget.Toast
-import android.os.Build
-import androidx.activity.viewModels
 import kz.olzhass.kolesa.ui.profile.ProfileViewModel
 
 class HomePage : AppCompatActivity() {
@@ -35,7 +37,7 @@ class HomePage : AppCompatActivity() {
 
         val navController = findNavController(R.id.nav_host_fragment_activity_home_page)
         val appBarConfiguration = AppBarConfiguration(setOf(
-            R.id.navigation_home, R.id.navigation_calendar, R.id.navigation_doctors, R.id.navigation_profile))
+            R.id.navigation_home, R.id.navigation_calendar, R.id.navigation_ai, R.id.navigation_doctors, R.id.navigation_profile))
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
@@ -43,8 +45,15 @@ class HomePage : AppCompatActivity() {
 
         val sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE)
         userId = sharedPreferences.getInt("user_id", -1)
+
+
         if (userId != -1) {
             profileViewModel.fetchProfile(userId)
+            profileViewModel.fetchDocumentDetails(userId)
+            Log.d("FETCHING", "FETCHING COMPLETED SUCCESSFULLY: ${profileViewModel.documentData}")
+
+        } else {
+            Toast.makeText(this, "User ID is not available", Toast.LENGTH_SHORT).show()
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -84,18 +93,20 @@ class HomePage : AppCompatActivity() {
         }
     }
 
-    // Функция для запроса разрешений на уведомления и галерею
     private fun requestPermissions() {
         val permissionsList = mutableListOf<String>()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            permissionsList.add(Manifest.permission.POST_NOTIFICATIONS)
-        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             permissionsList.add(Manifest.permission.READ_MEDIA_IMAGES)
         } else {
             permissionsList.add(Manifest.permission.READ_EXTERNAL_STORAGE)
         }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            permissionsList.add(Manifest.permission.POST_NOTIFICATIONS)
+        }
+
+
         permissionLauncher.launch(permissionsList.toTypedArray())
     }
 

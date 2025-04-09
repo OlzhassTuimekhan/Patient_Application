@@ -1,4 +1,4 @@
-package kz.olzhass.kolesa
+package kz.olzhass.kolesa.ui.profile
 
 data class ProfileData(
     val name: String,

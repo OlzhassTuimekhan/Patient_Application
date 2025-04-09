@@ -10,7 +10,6 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import kz.olzhass.kolesa.R
-import kz.olzhass.kolesa.TabsAdapter
 import kz.olzhass.kolesa.databinding.FragmentDoctorsBinding
 
 class DoctorsFragment : Fragment() {

@@ -1,4 +1,4 @@
-package kz.olzhass.kolesa
+package kz.olzhass.kolesa.ui.doctors
 
 data class Specialty(
     val id: Int,

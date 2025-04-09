@@ -20,11 +20,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import kz.olzhass.kolesa.EditNameBottomSheetDialogFragment
-import kz.olzhass.kolesa.EditNumberBottomSheetDialogFragment
-import kz.olzhass.kolesa.EditPasswordBottomSheetDialogFragment
 import kz.olzhass.kolesa.GlobalData
-import kz.olzhass.kolesa.MainPage
+import kz.olzhass.kolesa.ui.login.MainPage
 import kz.olzhass.kolesa.R
 import kz.olzhass.kolesa.databinding.FragmentProfileBinding
 import okhttp3.Call
@@ -64,13 +61,11 @@ class ProfileFragment : Fragment() {
         userId = sharedPreferences.getInt("user_id", -1)
         viewModel = ViewModelProvider(requireActivity()).get(ProfileViewModel::class.java)
 
-        // Подписка на LiveData для обновления UI
         profileViewModel.profileData.observe(viewLifecycleOwner) { profile ->
             if (profile != null) {
                 binding.tvName.text = profile.name
                 binding.tvNumber.text = profile.phoneNumber
                 binding.tvLocation.text = profile.location
-                // Обновляем UI согласно полученным данным
             } else {
                 binding.tvErrorMessage.text = "User not Found"
             }
@@ -154,6 +149,9 @@ class ProfileFragment : Fragment() {
                 val intent = Intent(requireActivity(), MainPage::class.java)
                 startActivity(intent)
                 requireActivity().finish()
+            }
+            tvDocuments.setOnClickListener {
+                findNavController().navigate(R.id.action_navigation_profile_to_documentsFragment)
             }
             tvChangeContact.setOnClickListener {
                 val bottomSheet = EditNumberBottomSheetDialogFragment()
