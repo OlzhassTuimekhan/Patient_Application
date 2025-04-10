@@ -1,10 +1,10 @@
 package kz.olzhass.kolesa.ui.calendar
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -13,16 +13,16 @@ import kz.olzhass.kolesa.databinding.FragmentActivesBinding
 import kz.olzhass.kolesa.ui.appointment.Appointment
 import kz.olzhass.kolesa.ui.appointment.AppointmentsAdapter
 
-class ActivesFragment() : Fragment() {
+class ActivesFragment : Fragment() {
 
     private var _binding: FragmentActivesBinding? = null
     private val binding get() = _binding!!
-    private lateinit var appointments: MutableList<Appointment>
+
+    // Инициализируем сразу пустым списком, чтобы избежать ошибки
+    private var allAppointments: List<Appointment> = emptyList()
+
     private val calendarViewModel: CalendarViewModel by activityViewModels()
     private lateinit var adapter: AppointmentsAdapter
-
-
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,71 +35,45 @@ class ActivesFragment() : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Наблюдаем за активными встречами из ViewModel
         calendarViewModel.activeAppointments.observe(viewLifecycleOwner, Observer { appointmentsList ->
             if (appointmentsList != null) {
-                appointments = appointmentsList.toMutableList() // Получаем данные и преобразуем их в список
-                Log.d("ActivesFragment", "Appointments size: ${appointments.size}")
+                // Обновляем мастер-лист
+                allAppointments = appointmentsList.toMutableList()
 
-                adapter = AppointmentsAdapter(appointments)
-                binding.recyclerViewActives.adapter = adapter
+                // Инициализируем адаптер с полным списком встреч
+                adapter = AppointmentsAdapter(allAppointments.toMutableList())
                 binding.recyclerViewActives.layoutManager = LinearLayoutManager(context)
+                binding.recyclerViewActives.adapter = adapter
             }
         })
 
+        // Реализация логики поиска
+        binding.searchView1.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                query?.let { filterAppointments(it) }
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                newText?.let { filterAppointments(it) }
+                return true
+            }
+        })
     }
 
-    fun getTestAppointments(): MutableList<Appointment> {
-        val appointments = mutableListOf<Appointment>()
-
-        appointments.add(Appointment(
-            appointment_id = 7,
-            user_id = 34,
-            doctor_id = 2,
-            appointment_date = "2025-08-03T19:00:00.000Z",
-            appointment_time = "18:46:00",
-            appointment_phone = "87072793054",
-            appointment_reason = "check-up",
-            appointment_status = "Pending",
-            appointment_created_at = "2025-04-08T13:46:38.242Z",
-            doctor_name = "Сандыгаш Сайрамбек",
-            doctor_phone = "87072793054",
-            doctor_email = "a.alihan0106@gmail.com",
-            doctor_created_at = "2025-03-24T05:49:40.963Z"
-        ))
-
-        appointments.add(Appointment(
-            appointment_id = 9,
-            user_id = 34,
-            doctor_id = 3,
-            appointment_date = "2025-04-08T19:00:00.000Z",
-            appointment_time = "06:11:00",
-            appointment_phone = "87070000001",
-            appointment_reason = "teeth",
-            appointment_status = "Pending",
-            appointment_created_at = "2025-04-09T01:11:58.444Z",
-            doctor_name = "Балдана Мараткызы",
-            doctor_phone = "87070000001",
-            doctor_email = "b.marat@example.com",
-            doctor_created_at = "2025-03-24T05:49:40.963Z"
-        ))
-
-        appointments.add(Appointment(
-            appointment_id = 10,
-            user_id = 34,
-            doctor_id = 3,
-            appointment_date = "2025-04-08T19:00:00.000Z",
-            appointment_time = "08:02:00",
-            appointment_phone = "87070000001",
-            appointment_reason = "ACTUALLY ITS WORKING BBBBB",
-            appointment_status = "Pending",
-            appointment_created_at = "2025-04-09T03:03:17.629Z",
-            doctor_name = "Балдана Мараткызы",
-            doctor_phone = "87070000001",
-            doctor_email = "b.marat@example.com",
-            doctor_created_at = "2025-03-24T05:49:40.963Z"
-        ))
-
-        return appointments
+    // Функция фильтрации списка по имени врача, дате или телефону
+    private fun filterAppointments(query: String) {
+        val filteredList = allAppointments.filter { appointment ->
+            appointment.doctor_name.contains(query, ignoreCase = true) ||
+                    appointment.appointment_date.contains(query) ||
+                    appointment.appointment_phone.contains(query)
+        }
+        adapter.updateList(filteredList)
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 }

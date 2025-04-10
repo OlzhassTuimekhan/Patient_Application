@@ -14,6 +14,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.fragment.findNavController
 import kz.olzhass.kolesa.GlobalData
+import kz.olzhass.kolesa.R
 import kz.olzhass.kolesa.databinding.FragmentAppointmentBinding
 import okhttp3.Call
 import okhttp3.Callback
@@ -128,7 +129,7 @@ class AppointmentFragment : Fragment() {
 
             //Logic for success appointment
             Toast.makeText(requireContext(), "Запись успешно создана", Toast.LENGTH_SHORT).show()
-            findNavController().popBackStack()
+            findNavController().navigate(R.id.action_AppointmentFragment_to_activesFragment)
 
 
         }
@@ -218,6 +219,5 @@ class AppointmentFragment : Fragment() {
 
         })
     }
-
 
 }

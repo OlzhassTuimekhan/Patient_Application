@@ -126,7 +126,7 @@ class ProfileFragment : Fragment() {
                 } else {
                     Manifest.permission.READ_EXTERNAL_STORAGE
                 }
-                // Проверяем, есть ли разрешение (оно должно было быть запрошено в HomePage)
+                // Проверяем, есть ли разрешение (оно должно было быть запрошено в MyDocuments)
                 if (ContextCompat.checkSelfPermission(requireContext(), galleryPermission) == PackageManager.PERMISSION_GRANTED) {
                     // Разрешение есть – открываем галерею
                     galleryLauncher.launch("image/*")

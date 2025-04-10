@@ -1,6 +1,5 @@
 package kz.olzhass.kolesa.ui.appointment
 
-import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,15 +7,16 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import kz.olzhass.kolesa.R
 
-class AppointmentsAdapter(private val appointments: MutableList<Appointment>) : RecyclerView.Adapter<AppointmentsAdapter.AppointmentViewHolder>() {
+class PreviousAppointmentsAdapter(private val appointments: List<Appointment>) : RecyclerView.Adapter<PreviousAppointmentsAdapter.AppointmentViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AppointmentViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_appointment, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_previous_appointment, parent, false) // новый layout для прошедших встреч
         return AppointmentViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: AppointmentViewHolder, position: Int) {
         val appointment = appointments[position]
+
         holder.doctorName.text = appointment.doctor_name
         holder.appointmentDate.text = appointment.appointment_date
         holder.appointmentTime.text = appointment.appointment_time
@@ -38,12 +38,5 @@ class AppointmentsAdapter(private val appointments: MutableList<Appointment>) : 
         val appointmentPhone: TextView = view.findViewById(R.id.tvPhone)
         val appointmentEmail: TextView = view.findViewById(R.id.tvEmail)
         val appointmentCreatedAt: TextView = view.findViewById(R.id.tvCreatedAt)
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    fun updateList(newList: List<Appointment>) {
-        appointments.clear()
-        appointments.addAll(newList)
-        notifyDataSetChanged()
     }
 }

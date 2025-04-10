@@ -39,8 +39,7 @@ class CalendarFragment : Fragment() {
 
         Log.d("FETCHING", "FETCHING Appointments STARTED: $userId")
         calendarViewModel.fetchAppointments(userId)
-        Log.d("FETCHING", "FETCHING COMPLETED SUCCESSFULLY: ${calendarViewModel.activeAppointments}")
-        Log.d("FETCHING", "FETCHING COMPLETED SUCCESSFULLY: ${calendarViewModel.previousAppointments}")
+
 
         val tabLayout = view.findViewById<TabLayout>(R.id.tabLayout1)
         val viewPager = view.findViewById<ViewPager2>(R.id.viewPager1)
@@ -48,13 +47,16 @@ class CalendarFragment : Fragment() {
         val adapter = CalendarTabsAdapter(this, viewModel)
         viewPager.adapter = adapter
 
+
+
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             when (position) {
-                0 -> tab.text = "Search"
-                1 -> tab.text = "Actives"
-                2 -> tab.text = "Previews"
+                0 -> tab.text = "Actives"
+                1 -> tab.text = "Previous"
             }
         }.attach()
+
+
     }
 
     override fun onDestroyView() {

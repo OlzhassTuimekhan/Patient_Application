@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         if (token != null) {
             val intent = Intent(
                 this@MainActivity,
-                HomePage::class.java
+                MyDocuments::class.java
             )
             startActivity(intent)
             finish()

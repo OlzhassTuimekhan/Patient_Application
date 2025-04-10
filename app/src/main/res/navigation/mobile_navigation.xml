@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_home">
+    app:startDestination="@+id/navigation_ai">
 
     <fragment
         android:id="@+id/navigation_home"
@@ -75,11 +75,24 @@
         android:label="Doctors By Specialty"
         tools:layout="@layout/fragment_doctors_by_specialty" />
 
+    <fragment
+        android:id="@+id/activesFragment"
+        android:name="kz.olzhass.kolesa.ui.calendar.ActivesFragment"
+        android:label="Active Appointments"
+        tools:layout="@layout/fragment_actives" />
+
     <action
         android:id="@+id/action_doctorsBySpecialty_to_appointmentFragment"
         app:destination="@id/appointmentFragment"
         app:argType="integer"
         app:popUpTo="@id/doctorsBySpecialtyFragment"
+        app:popUpToInclusive="true" />
+
+    <action
+        android:id="@+id/action_AppointmentFragment_to_activesFragment"
+        app:destination="@id/activesFragment"
+        app:argType="integer"
+        app:popUpTo="@id/appointmentFragment"
         app:popUpToInclusive="true" />
     <fragment
         android:id="@+id/allSpecialtiesFragment"

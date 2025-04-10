@@ -14,7 +14,10 @@ import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Locale
+import java.util.TimeZone
+import java.util.concurrent.TimeUnit
 
 class CalendarViewModel : ViewModel() {
 
@@ -29,6 +32,8 @@ class CalendarViewModel : ViewModel() {
     private var userId: Int = -1
 
     private val client = OkHttpClient()
+    private val outputDateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+    private val inputDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
 
     fun fetchAppointments(userId: Int) {
         if (userId == -1) {
@@ -56,56 +61,74 @@ class CalendarViewModel : ViewModel() {
                         if (jsonResponse.getBoolean("success")) {
                             val appointmentsJsonArray = jsonResponse.getJSONArray("appointments")
                             val appointmentsList = mutableListOf<Appointment>()
+                            val currentDate = Calendar.getInstance(TimeZone.getTimeZone("Asia/Almaty")).timeInMillis
 
                             Log.d("CalendarViewModel", "Appointments JSON Array: $appointmentsJsonArray")
                             for (i in 0 until appointmentsJsonArray.length()) {
                                 val appJson = appointmentsJsonArray.getJSONObject(i)
                                 Log.d("CalendarViewModel", "Appointment JSON Object: $appJson")
-                                val appointment = Appointment(
-                                    appointment_id = appJson.getInt("appointment_id"),
-                                    user_id = appJson.getInt("user_id"),
-                                    doctor_id = appJson.getInt("doctor_id"),
-                                    appointment_date = appJson.getString("appointment_date"),
-                                    appointment_time = appJson.getString("appointment_time"),
-                                    appointment_phone = appJson.getString("appointment_phone"),
-                                    appointment_reason = appJson.getString("appointment_reason"),
-                                    appointment_status = appJson.getString("appointment_status"),
-                                    appointment_created_at = appJson.getString("appointment_created_at"),
-                                    doctor_name = appJson.getString("doctor_name"),
-                                    doctor_phone = appJson.getString("doctor_phone"),
-                                    doctor_email = appJson.getString("doctor_email"),
-                                    doctor_created_at = appJson.getString("doctor_created_at")
-                                )
+                                try {
+                                    val appointmentDateStr = appJson.getString("appointment_date")
+                                    val parsedDate = inputDateFormat.parse(appointmentDateStr)
+                                    val formattedDate = outputDateFormat.format(parsedDate!!)
 
-                                appointmentsList.add(appointment)
+                                    val appointmentDateStr1 = appJson.getString("appointment_date")
+                                    val parsedDate1 = inputDateFormat.parse(appointmentDateStr1)
+                                    val formattedDate1 = outputDateFormat.format(parsedDate1!!)
+
+                                    val appointmentTimeMillis = parsedDate?.time ?: 0
+                                    val timeDifference = appointmentTimeMillis - currentDate
+                                    val daysRemaining = TimeUnit.MILLISECONDS.toDays(timeDifference)
+
+                                    val statusText = if (daysRemaining > 0) {
+                                        "$daysRemaining days remaining"
+                                    } else if (daysRemaining == 0L) {
+                                        "Today"
+                                    } else {
+                                        "Passed"
+                                    }
+
+                                    val appointment = Appointment(
+                                        appointment_id = appJson.getInt("appointment_id"),
+                                        user_id = appJson.getInt("user_id"),
+                                        doctor_id = appJson.getInt("doctor_id"),
+                                        appointment_date = formattedDate, // Отформатированная дата
+                                        appointment_time = appJson.getString("appointment_time"),
+                                        appointment_phone = appJson.getString("appointment_phone"),
+                                        appointment_reason = appJson.getString("appointment_reason"),
+                                        appointment_status = statusText, // Вычисленный статус
+                                        appointment_created_at = formattedDate1,
+                                        doctor_name = appJson.getString("doctor_name"),
+                                        doctor_phone = appJson.getString("doctor_phone"),
+                                        doctor_email = appJson.getString("doctor_email"),
+                                        doctor_created_at = appJson.getString("doctor_created_at")
+                                    )
+                                    appointmentsList.add(appointment)
+                                } catch (e: Exception) {
+                                    Log.e("CalendarViewModel", "Error processing appointment: ${appJson.toString()}", e)
+                                    // Обработка ошибки
+                                }
                             }
 
-                            // Разделяем встречи на активные и прошедшие
                             val activeList = mutableListOf<Appointment>()
                             val previousList = mutableListOf<Appointment>()
 
-                            val currentDate = System.currentTimeMillis()
-
                             appointmentsList.forEach {
-                                val appointmentDate = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault()).parse(it.appointment_date)
-                                val appointmentTime = appointmentDate?.time ?: 0
+                                val parsedDate = inputDateFormat.parse(
+                                    appointmentsJsonArray.getJSONObject(appointmentsList.indexOf(it)).getString("appointment_date")
+                                )
+                                val appointmentTimeMillis = parsedDate?.time ?: 0
 
-                                if (appointmentTime > currentDate) {
+                                if (appointmentTimeMillis > currentDate) {
                                     activeList.add(it)
                                 } else {
                                     previousList.add(it)
                                 }
                             }
 
-                            // Обновляем LiveData
                             _activeAppointments.postValue(activeList)
-                            for (appointment in activeList) {
-                                Log.d("ActivesFragment", "Appointment ID: ${appointment.appointment_id}, Doctor: ${appointment.doctor_name}, Time: ${appointment.appointment_time}")
-                            }
                             _previousAppointments.postValue(previousList)
-                            for (appointment in previousList) {
-                                Log.d("ActivesFragment", "Appointment ID: ${appointment.appointment_id}, Doctor: ${appointment.doctor_name}, Time: ${appointment.appointment_time}")
-                            }
+
                         } else {
                             _errorMessage.postValue("Appointments fetch failed: ${jsonResponse.getString("message")}")
                         }

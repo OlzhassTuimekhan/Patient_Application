@@ -6,16 +6,15 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 
 class CalendarTabsAdapter(
     fragment: Fragment,
-    private val viewModel: CalendarViewModel // Получаем экземпляр ViewModel
+    private val viewModel: CalendarViewModel
 ) : FragmentStateAdapter(fragment) {
 
-    override fun getItemCount(): Int = 3 // Количество вкладок
+    override fun getItemCount(): Int = 2
 
     override fun createFragment(position: Int): Fragment {
         return when (position) {
-            0 -> SearchFragment()
-            1 -> ActivesFragment()
-            2 -> PreviousFragment()
+            0 -> ActivesFragment()
+            1 -> PreviousFragment()
             else -> throw IllegalArgumentException("Invalid position: $position")
         }
     }

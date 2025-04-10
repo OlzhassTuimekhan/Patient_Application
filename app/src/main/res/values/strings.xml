@@ -71,4 +71,5 @@
     <string name="appointments">Appointments</string>
     <string name="doctor_information">Doctor Information:</string>
     <string name="enter_your_reason">Enter your reason</string>
+    <string name="documents">Documents</string>
 </resources>

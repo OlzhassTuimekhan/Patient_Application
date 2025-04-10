@@ -17,12 +17,12 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import kz.olzhass.kolesa.databinding.ActivityHomePageBinding
+import kz.olzhass.kolesa.databinding.ActivityMyDocumentsPageBinding
 import kz.olzhass.kolesa.ui.profile.ProfileViewModel
 
-class HomePage : AppCompatActivity() {
+class MyDocuments : AppCompatActivity() {
 
-    private lateinit var binding: ActivityHomePageBinding
+    private lateinit var binding: ActivityMyDocumentsPageBinding
     private val profileViewModel: ProfileViewModel by viewModels()
     private var userId: Int = -1
 
@@ -30,7 +30,7 @@ class HomePage : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         supportActionBar?.hide()
 
-        binding = ActivityHomePageBinding.inflate(layoutInflater)
+        binding = ActivityMyDocumentsPageBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         val navView: BottomNavigationView = binding.navView
