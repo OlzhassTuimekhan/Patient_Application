@@ -20,6 +20,16 @@
 
         <!-- Имя доктора -->
         <TextView
+            android:id="@+id/tvDoctorId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Null"
+            android:visibility="gone"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:textColor="@color/for_doctor_card"
+            android:fontFamily="@font/montserrat_semibold" />
+        <TextView
             android:id="@+id/tvDoctorName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

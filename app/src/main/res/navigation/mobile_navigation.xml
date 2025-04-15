@@ -79,7 +79,16 @@
         android:id="@+id/activesFragment"
         android:name="kz.olzhass.kolesa.ui.calendar.ActivesFragment"
         android:label="Active Appointments"
-        tools:layout="@layout/fragment_actives" />
+        tools:layout="@layout/fragment_actives" >
+
+    </fragment>
+
+    <action
+        android:id="@+id/action_activesFragment_to_appointmentRescheduleFragment"
+        app:destination="@id/appointmentRescheduleFragment"
+        app:argType="integer"
+        app:popUpTo="@id/activesFragment"
+        app:popUpToInclusive="true" />
 
     <action
         android:id="@+id/action_doctorsBySpecialty_to_appointmentFragment"
@@ -88,12 +97,12 @@
         app:popUpTo="@id/doctorsBySpecialtyFragment"
         app:popUpToInclusive="true" />
 
-    <action
-        android:id="@+id/action_AppointmentFragment_to_activesFragment"
-        app:destination="@id/activesFragment"
-        app:argType="integer"
-        app:popUpTo="@id/appointmentFragment"
-        app:popUpToInclusive="true" />
+<!--    <action-->
+<!--        android:id="@+id/action_AppointmentFragment_to_activesFragment"-->
+<!--        app:destination="@id/activesFragment"-->
+<!--        app:argType="integer"-->
+<!--        app:popUpTo="@id/appointmentFragment"-->
+<!--        app:popUpToInclusive="true" />-->
     <fragment
         android:id="@+id/allSpecialtiesFragment"
         android:name="kz.olzhass.kolesa.ui.doctors.AllSpecialtiesFragment"
@@ -130,6 +139,20 @@
         android:name="kz.olzhass.kolesa.ui.appointment.AppointmentFragment"
         android:label="Appointment"
         tools:layout="@layout/fragment_appointment">
+
+        <action
+            android:id="@+id/action_AppointmentFragment_to_activesFragment"
+            app:destination="@id/navigation_calendar"
+            app:popUpTo="@id/appointmentFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/appointmentRescheduleFragment"
+        android:name="kz.olzhass.kolesa.ui.appointment.AppointmentRescheduleFragment"
+        android:label="Appointment Reschedule"
+        tools:layout="@layout/fragment_appointment_reschedule">
+
     </fragment>
 
     <fragment

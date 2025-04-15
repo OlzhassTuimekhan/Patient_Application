@@ -99,7 +99,6 @@ class AppointmentFragment : Fragment() {
             datePickerDialog.show()
         }
 
-        // Выбор времени
         binding.btnPickTime.setOnClickListener {
             val calendar = Calendar.getInstance()
             val hour = calendar.get(Calendar.HOUR_OF_DAY)
@@ -152,8 +151,6 @@ class AppointmentFragment : Fragment() {
 
         val url = "http://${GlobalData.ip}:3000/create-appointment"
 
-
-        // Создаем JSON объект с параметрами для запроса
         val json = JSONObject().apply {
             put("user_id", userId)
             put("doctor_id", doctorId)
@@ -161,22 +158,19 @@ class AppointmentFragment : Fragment() {
             put("appointment_time", appointmentTime)
             put("phone", phone)
             put("reason", reason)
-            put("status", "Pending") // Можно не передавать, если хотите, чтобы по умолчанию было "Pending"
+            put("status", "Pending")
         }
 
-        // Создаем RequestBody с типом JSON
         val requestBody = RequestBody.create(
             "application/json; charset=utf-8".toMediaTypeOrNull(),
             json.toString()
         )
 
-        // Создаем запрос
         val request = Request.Builder()
             .url(url)
             .post(requestBody)
             .build()
 
-        // Отправляем запрос
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 _isLoading.postValue(false)

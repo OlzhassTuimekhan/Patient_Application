@@ -38,12 +38,17 @@ class PreviousFragment : Fragment() {
 
         calendarViewModel.previousAppointments.observe(viewLifecycleOwner, Observer { appointmentsList ->
             if (appointmentsList != null) {
-                appointments = appointmentsList.toMutableList() // Получаем данные и преобразуем их в список
+                binding.tvWelcomeAppointment.visibility = View.GONE
+                binding.recyclerViewPrevious.visibility = View.VISIBLE
+                appointments = appointmentsList.toMutableList()
                 Log.d("ActivesFragment", "Appointments size: ${appointments.size}")
 
-                adapter = PreviousAppointmentsAdapter(appointments)
+                adapter = PreviousAppointmentsAdapter(requireContext(), appointments)
                 binding.recyclerViewPrevious.adapter = adapter
                 binding.recyclerViewPrevious.layoutManager = LinearLayoutManager(context)
+            } else {
+                binding.tvWelcomeAppointment.visibility = View.VISIBLE
+                binding.recyclerViewPrevious.visibility = View.GONE
             }
         })
     }

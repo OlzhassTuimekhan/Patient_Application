@@ -97,7 +97,7 @@ class ProfileViewModel : ViewModel() {
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 _isLoading.postValue(false)
-                _errorMessage.postValue("Documents fetch failed: ${e.message}")
+//                _errorMessage.postValue("Documents fetch failed: ${e.message}")
             }
 
             override fun onResponse(call: Call, response: Response) {
@@ -150,20 +150,20 @@ class ProfileViewModel : ViewModel() {
                                 _documentData.postValue(documentsList)
                                 Log.d("ProfileViewModel", "Document list posted. Size: ${documentsList.size}")
                             } else {
-                                _errorMessage.postValue("No valid documents found.")
+//                                _errorMessage.postValue("No valid documents found.")
                             }
 
                         } else {
-                            _errorMessage.postValue("Documents fetch failed: ${jsonResponse.getString("message")}")
+//                            _errorMessage.postValue("Documents fetch failed: ${jsonResponse.getString("message")}")
                         }
 
                     } catch (e: Exception) {
-                        _errorMessage.postValue("Error parsing documents data: ${e.message}")
+//                        _errorMessage.postValue("Error parsing documents data: ${e.message}")
                         Log.e("ProfileViewModel", "Error parsing documents data: ${e.message}")
                     }
                 } else {
                     Log.d("PROFILE_VIEW_MODEL", "Response not successful: ${response.message}") // Логируем ошибку ответа
-                    _errorMessage.postValue("Documents fetch failed: ${response.message}")
+//                    _errorMessage.postValue("Documents fetch failed: ${response.message}")
                 }
             }
         })

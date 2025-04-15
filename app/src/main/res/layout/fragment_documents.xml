@@ -33,9 +33,27 @@
         android:id="@+id/recyclerViewDocuments"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@id/tv_settings"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp"/>
+
+    <TextView
+        android:id="@+id/tv_welcome_ai"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:layout_marginTop="284dp"
+        android:fontFamily="@font/urbanist_regular"
+        android:visibility="visible"
+        android:text="You don't have any documents yet."
+        android:textColor="#1E232C"
+        android:textAlignment="center"
+        android:textSize="36sp"
+        app:layout_constraintTop_toBottomOf="@id/tv_settings"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

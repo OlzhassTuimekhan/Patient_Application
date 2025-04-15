@@ -36,13 +36,9 @@ class Documents : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         val sampleDocuments = mutableListOf(
-            DocumentData("Доктор Айгерим", null, "Анализ крови", "2024-04-01"),
-            DocumentData("Доктор Ернар", null, "МРТ", "2023-12-12"),
-            DocumentData("Доктор Асель", null, "Рентген", "2023-09-18")
+            DocumentData("Dr.", null, "Specialization", "2024-01-01"),
         )
-
         documentsAdapter = DocumentsAdapter(sampleDocuments)
         binding.recyclerViewDocuments.adapter = documentsAdapter
         binding.recyclerViewDocuments.layoutManager = LinearLayoutManager(requireContext())
@@ -51,9 +47,14 @@ class Documents : Fragment() {
         profileViewModel.documentData.observe(viewLifecycleOwner) { documents ->
             Log.d("DocumentsFragment", "Observed documents: $documents")
             if (documents != null) {
+                binding.tvWelcomeAi.visibility = View.GONE
+                binding.recyclerViewDocuments.visibility = View.VISIBLE
                 documentsAdapter = DocumentsAdapter(documents)
                 binding.recyclerViewDocuments.adapter = documentsAdapter
                 binding.recyclerViewDocuments.layoutManager = LinearLayoutManager(requireContext())
+            } else {
+                binding.tvWelcomeAi.visibility = View.VISIBLE
+                binding.recyclerViewDocuments.visibility = View.GONE
             }
         }
 
