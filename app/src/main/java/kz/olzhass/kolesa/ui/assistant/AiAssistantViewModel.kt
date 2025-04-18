@@ -1,5 +1,6 @@
 package kz.olzhass.kolesa.ui.assistant
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,6 +14,8 @@ import okhttp3.RequestBody
 import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
+import java.util.concurrent.TimeUnit
+
 
 class AiAssistantViewModel : ViewModel() {
 
@@ -20,11 +23,16 @@ class AiAssistantViewModel : ViewModel() {
     val aiResponse: LiveData<String>
         get() = _aiResponse
 
-    private val client = OkHttpClient()
 
+    private val client = OkHttpClient.Builder()
+        .connectTimeout(30, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
+        .writeTimeout(30, TimeUnit.SECONDS)
+        .build()
 
     fun askAI(message: String) {
         val url = "http://${GlobalData.ip}:8000/ask-ai"
+        Log.d("AiAssistantViewModel", "URL: $url")
 
         val json = JSONObject().apply {
             put("message", message)
@@ -64,7 +72,6 @@ class AiAssistantViewModel : ViewModel() {
                         if (responseBody != null) {
                             val jsonResponse = JSONObject(responseBody)
                             val answer = jsonResponse.getString("answer")
-                            // Обновляем LiveData с ответом
                             _aiResponse.postValue(answer)
                         } else {
                             _aiResponse.postValue("Пустой ответ сервера.")

@@ -26,3 +26,6 @@ async def ask_ai(request_data: RequestData):
         api_name="/predict"
     )
     return {"answer": result}
+
+if __name__ == "__main__":
+    uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
