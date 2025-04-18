@@ -58,6 +58,17 @@
             android:fontFamily="@font/montserrat_medium"
             android:layout_marginTop="4dp" />
 
+        <Button
+            android:id="@+id/btnBookAppointment"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="10dp"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:background="@drawable/button_background"
+            android:text="Записаться"
+            android:textColor="@android:color/white" />
+
 
     </LinearLayout>
 </LinearLayout>

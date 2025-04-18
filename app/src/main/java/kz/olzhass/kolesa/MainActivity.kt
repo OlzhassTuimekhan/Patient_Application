@@ -7,6 +7,8 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import kz.olzhass.kolesa.databinding.ActivityMainBinding
+import kz.olzhass.kolesa.ui.login.MainPage
+import kz.olzhass.kolesa.ui.register.RegisterPage
 
 
 class MainActivity : AppCompatActivity() {
@@ -28,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         if (token != null) {
             val intent = Intent(
                 this@MainActivity,
-                HomePage::class.java
+                MyDocuments::class.java
             )
             startActivity(intent)
             finish()

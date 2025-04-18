@@ -12,7 +12,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -21,14 +20,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import kz.olzhass.kolesa.EditNameBottomSheetDialogFragment
-import kz.olzhass.kolesa.EditNumberBottomSheetDialogFragment
-import kz.olzhass.kolesa.EditPasswordBottomSheetDialogFragment
 import kz.olzhass.kolesa.GlobalData
-import kz.olzhass.kolesa.MainPage
+import kz.olzhass.kolesa.ui.login.MainPage
 import kz.olzhass.kolesa.R
 import kz.olzhass.kolesa.databinding.FragmentProfileBinding
-import kz.olzhass.kolesa.ui.calendar.CalendarFragment
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -66,13 +61,11 @@ class ProfileFragment : Fragment() {
         userId = sharedPreferences.getInt("user_id", -1)
         viewModel = ViewModelProvider(requireActivity()).get(ProfileViewModel::class.java)
 
-        // Подписка на LiveData для обновления UI
         profileViewModel.profileData.observe(viewLifecycleOwner) { profile ->
             if (profile != null) {
                 binding.tvName.text = profile.name
                 binding.tvNumber.text = profile.phoneNumber
                 binding.tvLocation.text = profile.location
-                // Обновляем UI согласно полученным данным
             } else {
                 binding.tvErrorMessage.text = "User not Found"
             }
@@ -133,7 +126,7 @@ class ProfileFragment : Fragment() {
                 } else {
                     Manifest.permission.READ_EXTERNAL_STORAGE
                 }
-                // Проверяем, есть ли разрешение (оно должно было быть запрошено в HomePage)
+                // Проверяем, есть ли разрешение (оно должно было быть запрошено в MyDocuments)
                 if (ContextCompat.checkSelfPermission(requireContext(), galleryPermission) == PackageManager.PERMISSION_GRANTED) {
                     // Разрешение есть – открываем галерею
                     galleryLauncher.launch("image/*")
@@ -156,6 +149,9 @@ class ProfileFragment : Fragment() {
                 val intent = Intent(requireActivity(), MainPage::class.java)
                 startActivity(intent)
                 requireActivity().finish()
+            }
+            tvDocuments.setOnClickListener {
+                findNavController().navigate(R.id.action_navigation_profile_to_documentsFragment)
             }
             tvChangeContact.setOnClickListener {
                 val bottomSheet = EditNumberBottomSheetDialogFragment()

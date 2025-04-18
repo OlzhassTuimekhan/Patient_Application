@@ -82,7 +82,7 @@
                             android:layout_weight="1"
                             android:text="@string/error"
                             android:textColor="#FF0000"
-                            android:textSize="20sp"
+                            android:textSize="10sp"
                             android:visibility="gone" />
                     </LinearLayout>
 
@@ -154,6 +154,19 @@
                         android:fontFamily="@font/urbanist_medium"
                         android:padding="16dp"
                         android:text="@string/notifications"
+                        android:textColor="@android:color/black"
+                        android:textSize="18sp"
+                        app:drawableRightCompat="@drawable/ic_arrow_right" />
+
+                    <TextView
+                        android:id="@+id/tv_documents"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:background="?attr/selectableItemBackground"
+                        android:fontFamily="@font/urbanist_medium"
+                        android:padding="16dp"
+                        android:text="@string/my_documents"
                         android:textColor="@android:color/black"
                         android:textSize="18sp"
                         app:drawableRightCompat="@drawable/ic_arrow_right" />
